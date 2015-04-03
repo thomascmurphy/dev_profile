@@ -23,18 +23,28 @@
 					<h3 class="no_margin_top">
 						<a href="#"><%= skill.language.name %></a>
 					</h3>
-					<div class="progress no_margin_bottom">
-					  <div class="progress-bar<% if skill.rating >=8 %> progress-bar-success<% elsif skill.rating >=4 %> progress-bar-warning<% else %> progress-bar-danger<% end %>" role="progressbar" aria-valuenow="<%= skill.rating %>" aria-valuemin="0" aria-valuemax="10" style="width: <%= skill.rating %>0%;">
-					    <%= skill.rating %>/10
-					  </div>
-					</div>
-					<div class="row slider_container">
-						<div class="col-xs-9">
-							<input type="range" name="points" min="0" max="10" step="1" value="<%= skill.rating %>">
-						</div>
-						<div class="col-xs-3">
-							<span class="slider_value_wrapper alt_font"><span class="slider_value"><%= skill.rating %></span>/10</span>
-						</div>
+					<div class="editable_region">
+  					<%= form_for skill, :html => {:class => 'ajax_form'} do |f| %>
+
+    				  <div class="static_display" style="min-height: 44px;">
+      					<div class="progress">
+      					  <div class="progress-bar<% if skill.rating >=8 %> progress-bar-success<% elsif skill.rating >=4 %> progress-bar-warning<% else %> progress-bar-danger<% end %>" role="progressbar" aria-valuenow="<%= skill.rating %>" aria-valuemin="0" aria-valuemax="10" style="width: <%= skill.rating %>0%;">
+      					    <%= skill.rating %>/10
+      					  </div>
+      					</div>
+    				  </div>
+    				  <div class="edit_display">
+      					<div class="row slider_container">
+      						<div class="col-xs-9">
+      							<input type="range" name="rating" min="0" max="10" step="1" value="<%= skill.rating %>">
+      						</div>
+      						<div class="col-xs-3">
+      							<span class="slider_value_wrapper alt_font"><span class="slider_value"><%= skill.rating %></span>/10</span>
+      						</div>
+      					</div>
+    				  </div>
+    				  <a href="javascript:void(0);" class="edit_toggle">Edit</a>
+  					<% end %>
 					</div>
 				</div>
 			<% end %>

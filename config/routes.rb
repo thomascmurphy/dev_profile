@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   get 'home/index'
 
   devise_for :users, controllers: { sessions: "users/sessions" }
-  resources :locations, :companies
+  resources :locations, :companies, :skills
 
   get 'profiles/:username', to: 'profiles#show', as: :profile
 
