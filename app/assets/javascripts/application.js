@@ -15,3 +15,16 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require_tree .
+
+//= require chart-simple
+
+jQuery(function($){
+
+	$('body').on('change, input', '.slider_container input[type="range"]', function(){
+		var slider_container = $(this).closest('.slider_container');
+		slider_container.find('span.slider_value').text($(this).val());
+	});
+
+
+
+});

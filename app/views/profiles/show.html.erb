@@ -9,18 +9,66 @@
       <h1 class="green alt_font no_margin_top"><%= @user.first_name %> <%= @user.last_name %></h1>
       <h2><%= @user.title %></h2>
       <div id="profile_job_timeline">
-        job timeline
+        job timeline <%= @user_signed_in %>
       </div>
+    </div>
   </div>
-  <div class="row">
+  <div class="row large_margin_top">
     <div class="col-sm-4">
-      <h3>Skills</h3>
+      <h3 class="text-center">Skills</h3>
+      <div id="test_diagram" class="skew_graph"></div>
+
+      <% @user.skills.by_rating.each do |skill| %>
+				<div class="well skill_listing">
+					<h3 class="no_margin_top">
+						<a href="#"><%= skill.language.name %></a>
+					</h3>
+					<div class="progress no_margin_bottom">
+					  <div class="progress-bar<% if skill.rating >=8 %> progress-bar-success<% elsif skill.rating >=4 %> progress-bar-warning<% else %> progress-bar-danger<% end %>" role="progressbar" aria-valuenow="<%= skill.rating %>" aria-valuemin="0" aria-valuemax="10" style="width: <%= skill.rating %>0%;">
+					    <%= skill.rating %>/10
+					  </div>
+					</div>
+					<div class="row slider_container">
+						<div class="col-xs-9">
+							<input type="range" name="points" min="0" max="10" step="1" value="<%= skill.rating %>">
+						</div>
+						<div class="col-xs-3">
+							<span class="slider_value_wrapper alt_font"><span class="slider_value"><%= skill.rating %></span>/10</span>
+						</div>
+					</div>
+				</div>
+			<% end %>
     </div>
     <div class="col-sm-4">
-      <h3>Code Samples</h3>
+      <h3 class="text-center">Code Samples</h3>
     </div>
     <div class="col-sm-4">
-      <h3>Preferences</h3>
+      <h3 class="text-center">Preferences</h3>
     </div>
   </div>
 </div>
+
+
+<script type="text/javascript">
+
+jQuery(function($){
+	var skills_array = [];
+	<% @user.skills.by_rating.each do |skill| %>
+		skills_array.push({name: '<%= skill.language.name %>', value: <%= skill.rating %>})
+	<% end %>
+
+  var test_data = [{title: 'My Skills', values: skills_array}];
+
+  var test_options = {
+    colors: [
+      '#4CAF50'
+    ],
+    border_color: '#999999',
+    has_key: false,
+  };
+
+  $('#test_diagram').drawSkew(test_data, test_options);
+
+});
+
+</script>

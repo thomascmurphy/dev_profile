@@ -84,4 +84,55 @@ states = State.create([{name: 'Alabama', abbreviation: 'AL'},
                        {name: 'Saskatchewan', abbreviation: 'SK'},
                        {name: 'Yukon', abbreviation: 'YT'}])
 
-Company.create(name: 'Test Company', description: 'Test company description', address_1: 'Test Company Location', city: 'Gotham', postcode: '11111', state: states.first)
+company = Company.create(name: 'Test Company', description: 'Test company description', address_1: 'Test Company Location', city: 'Gotham', postcode: '11111', state: states.first)
+
+user = User.new(
+  email: "thomas.c.murphy@gmail.com",
+  username: "testuser",
+  password: "testpassword",
+  password_confirmation: "testpassword",
+  first_name: "Test",
+  last_name: "User",
+  blurb: "A little about myself",
+  title: "My Title"
+)
+user.skip_confirmation!
+user.save!
+
+user_skills = Skill.create([{user: user, language: languages[0], rating: 10},
+														{user: user, language: languages[1], rating: 9},
+														{user: user, language: languages[2], rating: 3},
+														{user: user, language: languages[3], rating: 10},
+														{user: user, language: languages[4], rating: 9},
+														{user: user, language: languages[5], rating: 6},
+														{user: user, language: languages[6], rating: 7}])
+
+
+
+previous_job = Job.create(title: "Previous Job", description: "Mostly front end work", user: user, company: company, salary: 40000, start_date: Date.new(20012, 5, 12), end_date: Date.new(2013, 5, 12))
+
+previous_job_skills = Skill.create([{job: previous_job, language: languages[0], rating: 10},
+																		{job: previous_job, language: languages[1], rating: 6},
+																		{job: previous_job, language: languages[2], rating: 2},
+																		{job: previous_job, language: languages[3], rating: 8}])
+
+
+
+current_job = Job.create(title: "Current Job", description: "Full stack dev", user: user, company: company, salary: 60000, start_date: Date.new(20013, 5, 12))
+
+current_job_skills = Skill.create([{job: current_job, language: languages[0], rating: 7},
+																	 {job: current_job, language: languages[1], rating: 9},
+																	 {job: current_job, language: languages[2], rating: 3},
+																	 {job: current_job, language: languages[3], rating: 6}])
+
+
+
+new_job = Job.create(title: "New Job", description: "Cool new job", company: company, salary: 80000, start_date: Date.new(20013, 5, 12))
+
+new_job_skills = Skill.create([{job: new_job, language: languages[0], rating: 7},
+															 {job: new_job, language: languages[1], rating: 6},
+															 {job: new_job, language: languages[2], rating: 7},
+															 {job: new_job, language: languages[3], rating: 10},
+															 {job: new_job, language: languages[4], rating: 10},
+															 {job: new_job, language: languages[5], rating: 8},
+															 {job: new_job, language: languages[6], rating: 7}])
