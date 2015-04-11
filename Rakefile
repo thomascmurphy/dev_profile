@@ -5,6 +5,6 @@ require File.expand_path('../config/application', __FILE__)
 
 Rails.application.load_tasks
 
-task :server do
-  `bundle exec rails s -p 3001`
-end
+# task :server do
+#   `bundle exec rails s -p 3001`
+# end
