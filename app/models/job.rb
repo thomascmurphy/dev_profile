@@ -2,5 +2,5 @@ class Job < ActiveRecord::Base
   belongs_to :user
   belongs_to :company
   belongs_to :location
-  has_many :skills
+  has_many :skills, as: :parent
 end

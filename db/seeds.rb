@@ -99,40 +99,53 @@ user = User.new(
 user.skip_confirmation!
 user.save!
 
-user_skills = Skill.create([{user: user, language: languages[0], rating: 10},
-														{user: user, language: languages[1], rating: 9},
-														{user: user, language: languages[2], rating: 3},
-														{user: user, language: languages[3], rating: 10},
-														{user: user, language: languages[4], rating: 9},
-														{user: user, language: languages[5], rating: 6},
-														{user: user, language: languages[6], rating: 7}])
+user_skills = Skill.create([{parent: user, language: languages[0], rating: 10},
+														{parent: user, language: languages[1], rating: 9},
+														{parent: user, language: languages[2], rating: 3},
+														{parent: user, language: languages[3], rating: 10},
+														{parent: user, language: languages[4], rating: 9},
+														{parent: user, language: languages[5], rating: 6},
+														{parent: user, language: languages[6], rating: 7}])
 
 
 
 previous_job = Job.create(title: "Previous Job", description: "Mostly front end work", user: user, company: company, salary: 40000, start_date: Date.new(20012, 5, 12), end_date: Date.new(2013, 5, 12))
 
-previous_job_skills = Skill.create([{job: previous_job, language: languages[0], rating: 10},
-																		{job: previous_job, language: languages[1], rating: 6},
-																		{job: previous_job, language: languages[2], rating: 2},
-																		{job: previous_job, language: languages[3], rating: 8}])
+previous_job_skills = Skill.create([{parent: previous_job, language: languages[0], rating: 10},
+																		{parent: previous_job, language: languages[1], rating: 6},
+																		{parent: previous_job, language: languages[2], rating: 2},
+																		{parent: previous_job, language: languages[3], rating: 8}])
 
 
 
 current_job = Job.create(title: "Current Job", description: "Full stack dev", user: user, company: company, salary: 60000, start_date: Date.new(20013, 5, 12))
 
-current_job_skills = Skill.create([{job: current_job, language: languages[0], rating: 7},
-																	 {job: current_job, language: languages[1], rating: 9},
-																	 {job: current_job, language: languages[2], rating: 3},
-																	 {job: current_job, language: languages[3], rating: 6}])
+current_job_skills = Skill.create([{parent: current_job, language: languages[0], rating: 7},
+																	 {parent: current_job, language: languages[1], rating: 9},
+																	 {parent: current_job, language: languages[2], rating: 3},
+																	 {parent: current_job, language: languages[3], rating: 6}])
 
 
 
 new_job = Job.create(title: "New Job", description: "Cool new job", company: company, salary: 80000, start_date: Date.new(20013, 5, 12))
 
-new_job_skills = Skill.create([{job: new_job, language: languages[0], rating: 7},
-															 {job: new_job, language: languages[1], rating: 6},
-															 {job: new_job, language: languages[2], rating: 7},
-															 {job: new_job, language: languages[3], rating: 10},
-															 {job: new_job, language: languages[4], rating: 10},
-															 {job: new_job, language: languages[5], rating: 8},
-															 {job: new_job, language: languages[6], rating: 7}])
+new_job_skills = Skill.create([{parent: new_job, language: languages[0], rating: 7},
+															 {parent: new_job, language: languages[1], rating: 6},
+															 {parent: new_job, language: languages[2], rating: 7},
+															 {parent: new_job, language: languages[3], rating: 10},
+															 {parent: new_job, language: languages[4], rating: 10},
+															 {parent: new_job, language: languages[5], rating: 8},
+															 {parent: new_job, language: languages[6], rating: 7}])
+
+code_sample_1 = CodeSample.create(title: "Code Sample 1", description: "First bit of code.", user: user, date_completed: Date.new(20013, 5, 12), url: 'http://www.paperballdesigns.com')
+
+code_sample_1_skills = Skill.create([{parent: code_sample_1, language: languages[0], rating: 7},
+																	   {parent: code_sample_1, language: languages[1], rating: 9},
+                                     {parent: code_sample_1, language: languages[3], rating: 6}])
+
+code_sample_2 = CodeSample.create(title: "Code Sample 2", description: "Second bit of code.", user: user, date_completed: Date.new(20014, 5, 12), url: 'http://www.penny-arcade.com')
+
+code_sample_2_skills = Skill.create([{parent: code_sample_2, language: languages[0], rating: 7},
+																	   {parent: code_sample_2, language: languages[1], rating: 9},
+                                     {parent: code_sample_2, language: languages[5], rating: 8},
+                                     {parent: code_sample_2, language: languages[6], rating: 7}])

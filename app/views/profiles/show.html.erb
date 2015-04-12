@@ -14,7 +14,7 @@
     </div>
   </div>
   <div class="row large_margin_top">
-    <div class="col-sm-4">
+    <div class="col-sm-4 editable_skills_list">
       <h3 class="text-center">Skills</h3>
       <div id="test_diagram" class="skew_graph"></div>
 
@@ -23,7 +23,7 @@
 					<h3 class="no_margin_top">
 						<a href="#"><%= skill.language.name %></a>
 					</h3>
-					<div class="editable_region">
+					<div class="editable_region" data-list_parent=".editable_skills_list">
   					<%= form_for skill, :html => {:class => 'ajax_form'} do |f| %>
 
     				  <div class="static_display" style="min-height: 44px;">
@@ -36,7 +36,7 @@
     				  <div class="edit_display">
       					<div class="row slider_container">
       						<div class="col-xs-9">
-      							<input type="range" name="rating" min="0" max="10" step="1" value="<%= skill.rating %>">
+      							<input type="range" name="rating" min="0" max="10" step="1" value="<%= skill.rating %>" data-skill_name="<%= skill.language.name %>">
       						</div>
       						<div class="col-xs-3">
       							<span class="slider_value_wrapper alt_font"><span class="slider_value"><%= skill.rating %></span>/10</span>
@@ -51,6 +51,21 @@
     </div>
     <div class="col-sm-4">
       <h3 class="text-center">Code Samples</h3>
+      <% @user.code_samples.by_date_completed.each do |code_sample| %>
+        <div class="well skill_listing">
+					<h3 class="no_margin_top">
+						<a href="<%= code_sample.url %>" target="_blank"><%= code_sample.title %></a>
+					</h3>
+					<p>
+  					<%= code_sample.description %>
+					</p>
+					<p>Using: <em>
+  				  <% code_sample.skills.each do |code_sample_skill| %>
+  				    <%= code_sample_skill.language.name %>,
+  				  <% end %>
+  				</em></p>
+        </div>
+      <% end %>
     </div>
     <div class="col-sm-4">
       <h3 class="text-center">Preferences</h3>
@@ -63,21 +78,46 @@
 
 jQuery(function($){
 	var skills_array = [];
-	<% @user.skills.by_rating.each do |skill| %>
+	<% @user.skills.by_language.each do |skill| %>
 		skills_array.push({name: '<%= skill.language.name %>', value: <%= skill.rating %>})
 	<% end %>
 
-  var test_data = [{title: 'My Skills', values: skills_array}];
+	var updateSkew = function(new_skills_array){
+  	var skills_data = [{title: 'Skill Rating', values: new_skills_array}];
 
-  var test_options = {
-    colors: [
-      '#4CAF50'
-    ],
-    border_color: '#999999',
-    has_key: false,
-  };
+    var skills_options = {
+      colors: [
+        '#4CAF50'
+      ],
+      border_color: '#999999',
+      has_key: false,
+    };
 
-  $('#test_diagram').drawSkew(test_data, test_options);
+    $('#test_diagram').html('').drawSkew(skills_data, skills_options);
+	};
+
+	updateSkew(skills_array);
+
+	var returnMatchingIndex = function(check_array, attr_name, attr_value){
+  	for(i=0; i<check_array.length; i++){
+    	if(check_array[i][attr_name] == attr_value){
+      	return i;
+    	}
+  	}
+  	return false;
+	};
+
+  $('body').on('change, input', '.skill_listing input[type="range"]', function(){
+    var skill_name = $(this).data('skill_name');
+    var updated_value = $(this).val();
+    var updated_skill_index = returnMatchingIndex(skills_array, 'name', skill_name);
+
+    if(updated_skill_index !== false){
+      skills_array[updated_skill_index]['value'] = updated_value;
+      updateSkew(skills_array);
+    }
+
+  });
 
 });
 

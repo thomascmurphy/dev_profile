@@ -1,0 +1,2 @@
+class CodeSamplesController < ApplicationController
+end

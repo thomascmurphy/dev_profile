@@ -63,9 +63,13 @@ jQuery(function($){
 
 	$('body').on('click', 'a.edit_toggle', function(){
   	var editable_region = $(this).closest('.editable_region');
+  	var editable_region_list_parent = editable_region.data('list_parent');
   	if($(this).hasClass('submit_form')){
     	editable_region.find('form').submit();
   	} else {
+    	if(editable_region_list_parent && editable_region.closest(editable_region_list_parent).find('.editable_region.editing').length){
+        editable_region.closest(editable_region_list_parent).find('.editable_region.editing a.edit_toggle').click();
+    	}
     	$(this).addClass('submit_form').text('Save');
     	editable_region.toggleClass('editing');
   	}
