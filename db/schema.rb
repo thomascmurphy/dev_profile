@@ -74,10 +74,12 @@ ActiveRecord::Schema.define(version: 20150411143725) do
     t.integer  "rating"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+    t.integer  "job_id"
     t.integer  "parent_id"
     t.string   "parent_type"
   end
 
+  add_index "skills", ["job_id"], name: "index_skills_on_job_id"
   add_index "skills", ["language_id"], name: "index_skills_on_language_id"
   add_index "skills", ["parent_type", "parent_id"], name: "index_skills_on_parent_type_and_parent_id"
 

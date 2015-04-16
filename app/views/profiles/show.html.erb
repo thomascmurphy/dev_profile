@@ -79,8 +79,16 @@
 jQuery(function($){
 	var skills_array = [];
 	<% @user.skills.by_language.each do |skill| %>
-		skills_array.push({name: '<%= skill.language.name %>', value: <%= skill.rating %>})
+		skills_array.push({name: '<%= skill.language.name %>', value: <%= skill.rating %>, category: 'Category 1'})
 	<% end %>
+
+  skills_array[2]['category'] = 'Category 2'
+  skills_array[3]['category'] = 'Category 2'
+
+  skills_array[4]['category'] = 'Category 3'
+  skills_array[5]['category'] = 'Category 3'
+
+  skills_array[6]['category'] = 'Category 4'
 
 	var updateSkew = function(new_skills_array){
   	var skills_data = [{title: 'Skill Rating', values: new_skills_array}];
@@ -91,6 +99,8 @@ jQuery(function($){
       ],
       border_color: '#999999',
       has_key: false,
+      categories: true,
+      categories_colors: ['#81D4FA', '#EF9A9A', '#C5E1A5', '#FFE082', '#B39DDB', '#FFAB91']
     };
 
     $('#test_diagram').html('').drawSkew(skills_data, skills_options);

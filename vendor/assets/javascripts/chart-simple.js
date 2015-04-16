@@ -470,7 +470,7 @@ if(!full_donut){
 
 
 
-    $.fn.drawSkew = function(data, options){
+    $.fn.drawSkew = function(data, options) {
         var element = $(this),
             width = options.has_key ? 200 : 100,
             height = 100,
@@ -482,21 +482,25 @@ if(!full_donut){
             fit_comparison = (fit_master + 1) % 2,
             title = options.title,
             has_key = options.has_key,
+            edge_tooltips = options.edge_tooltips || false,
+            categories = options.categories || false,
+            categories_colors = options.categories_colors,
             dot_radius = 1.5,
-            offset_top = !title ? dot_radius : 10,
-            offset_bottom = !show_fit ? dot_radius : 10;
+            offset_top = !title ? dot_radius*2 : 10,
+            offset_bottom = !show_fit ? dot_radius*2 : 10;
             center_x = width/2,
             center_y = height/2,
-            outer_radius = Math.min(center_x - dot_radius, center_y - (offset_top + offset_bottom)/2),
-            start_x = options.has_key ? outer_radius + dot_radius : center_x,
-            start_y = outer_radius + offset_top,
+            inner_radius = Math.min(center_x - dot_radius*2, center_y - (offset_top + offset_bottom)/2),
+            outer_radius = inner_radius + dot_radius*2,
+            start_x = options.has_key ? inner_radius + dot_radius : center_x,
+            start_y = inner_radius + offset_top,
             cos = Math.cos,
             sin = Math.sin,
             PI = Math.PI,
             total_radians = 2*PI;
 
         var svg = $('<svg width="100%" height="100%" viewBox="0, 0, ' + width +', '+ height +'" xmlns="http://www.w3.org/2000/svg"></svg>').appendTo(element);
-				var outer_circle = makeSVG('circle', {cx: start_x, cy: start_y, r: outer_radius, stroke: border_color, "stroke-width": "0.5%", fill: "none"});
+				var outer_circle = makeSVG('circle', {cx: start_x, cy: start_y, r: inner_radius, stroke: border_color, "stroke-width": "0.5%", fill: "none"});
 		    svg.append(outer_circle);
 
         var key_data = [];
@@ -506,50 +510,149 @@ if(!full_donut){
         var start_angle = PI * 1/2;
         var fit_total = 0;
         var tooltip_values = [];
+        var tooltip_pieces = [];
+        var category_pieces = {};
 
-        for(var i=0; i<data.length; i++){
+        var edge_angle = start_angle;
+        var category_counter = 0;
+        for(var j=0; j<data[0]['values'].length; j++) {
+	        	var data_item = data[0]['values'][j],
+	        	coord_x = start_x + inner_radius * (cos(edge_angle)),
+		        coord_y = start_y - inner_radius * (sin(edge_angle));
+
+            if(edge_tooltips) {
+  	        	var piece_path = makeSVG('circle', {cx: coord_x, cy: coord_y, r: dot_radius, fill: border_color, "data-title": data_item.name, "data-value": tooltip_values[j].join('<br/>'), class: "graph_piece"});
+  		        svg.append(piece_path);
+              edge_angle += angle_step;
+            }
+
+            if(categories){
+              var category_name = data_item.category;
+              if(category_name in category_pieces) {
+                category_pieces[category_name]['length'] += 1;
+              }
+              else {
+                category_pieces[category_name] = {'length': 1, 'color': categories_colors[category_counter%categories_colors.length], 'value': 'test'};
+                category_counter++;
+              }
+            }
+
+		        if(show_fit && data.length == 2) {
+			        	fit_total += (1 - ( Math.max(data[fit_master]['values'][j]['value'] - data[fit_comparison]['values'][j]['value'], 0) / data_max ) );
+		        }
+        }
+
+        if(categories && category_pieces) {
+          var category_start_angle = start_angle + PI/data_points,
+              category_start_x = outer_radius + outer_radius * (cos(category_start_angle));
+              category_start_y = outer_radius - outer_radius * (sin(category_start_angle));
+
+          for(var category_name in category_pieces) {
+            if(category_pieces.hasOwnProperty(category_name)) {
+              var category = category_pieces[category_name],
+              arc_length = (category.length / data_points) * total_radians,
+              end_x_outer = outer_radius + outer_radius * (cos(category_start_angle - arc_length)),
+              end_y_outer = outer_radius - outer_radius * (sin(category_start_angle - arc_length)),
+              end_x_inner = outer_radius + inner_radius * (cos(category_start_angle - arc_length)),
+              end_y_inner = outer_radius - inner_radius * (sin(category_start_angle - arc_length)),
+              color = category.color,
+              arc_outer_sweep,
+              arc_inner_sweep;
+
+              if(arc_length >= PI){
+                  arc_outer_sweep = '0 1 1';
+                  arc_inner_sweep = '0 1 0';
+              } else {
+                  arc_outer_sweep = '0 0 1';
+                  arc_inner_sweep = '0 0 0';
+              }
+
+              var piece_attrs;
+              var path_type = 'path';
+
+              if(category_counter == 1){
+
+                  var piece_path = makeSVG('circle', {"cx": outer_radius, "cy": outer_radius, "r": inner_radius + dot_radius, "stroke": color, "stroke-width": dot_radius*2, "fill": "none", "data-title": category_name, "data-value": category.value, class: "graph_piece"});
+
+              } else {
+
+                piece_attrs = [
+                    'M',
+                    category_start_x,
+                    category_start_y,
+                    'A',
+                    outer_radius,
+                    outer_radius,
+                    arc_outer_sweep,
+                    end_x_outer,
+                    end_y_outer,
+                    'L',
+                    end_x_inner,
+                    end_y_inner,
+                    'A',
+                    inner_radius,
+                    inner_radius,
+                    arc_inner_sweep,
+                    outer_radius + inner_radius * (cos(category_start_angle)),
+                    outer_radius - inner_radius * (sin(category_start_angle)),
+                    'L',
+                    category_start_x,
+                    category_start_y,
+                    'Z'
+                ];
+                var piece_path = makeSVG('path', {d: piece_attrs.join(' '), fill: color, "data-title": category_name, "data-value": category.value, class: "graph_piece"});
+              }
+
+              svg.append(piece_path);
+              category_start_x = end_x_outer;
+              category_start_y = end_y_outer;
+              category_start_angle = (category_start_angle - arc_length) > 0 ?  (category_start_angle - arc_length) % (2*PI) : category_start_angle - arc_length + 2*PI;
+            }
+          }
+        }
+
+        for(var i=0; i<data.length; i++) {
 	        	var coords = [];
 	        	var graph_name = data[i]['title'];
-	        	start_angle = PI * 1/2;
-	        	for(var j=0; j<data[i]['values'].length; j++){
+	        	var piece_angle = start_angle;
+	        	for(var j=0; j<data[i]['values'].length; j++) {
 		            var data_item = data[i]['values'][j],
-		            coord_x = start_x + (outer_radius * data_item.value/data_max) * (cos(start_angle)),
-		            coord_y = start_y - (outer_radius * data_item.value/data_max) * (sin(start_angle)),
+		            coord_x = start_x + (inner_radius * data_item.value/data_max) * (cos(piece_angle)),
+		            coord_y = start_y - (inner_radius * data_item.value/data_max) * (sin(piece_angle)),
 		            color = colors[i%colors.length];
 
 		            coords.push(coord_x + ',' + coord_y);
-		            start_angle += angle_step;
-		            if(tooltip_values[j]){
-				            tooltip_values[j].push(graph_name + ": " + data_item.value + "/" + data_max);
-				        } else {
-					        	tooltip_values[j] = [graph_name + ": " + data_item.value + "/" + data_max];
-				        }
+                piece_angle += angle_step;
+                if(edge_tooltips) {
+  		            if(tooltip_values[j]) {
+  				            tooltip_values[j].push(graph_name + ": " + data_item.value + "/" + data_max);
+  				        } else {
+  					        	tooltip_values[j] = [graph_name + ": " + data_item.value + "/" + data_max];
+  				        }
+                }
+                else {
+                  var tooltip_piece_path = makeSVG('circle', {cx: coord_x, cy: coord_y, r: dot_radius, fill: color, "data-title": data_item.name, "data-value": graph_name + ": " + data_item.value + "/" + data_max, class: "graph_piece"});
+      		        tooltip_pieces.push(tooltip_piece_path);
+                }
+
 		        }
 
 		        var piece_path = makeSVG('polygon', {points: coords.join(' '), fill: color, "fill-opacity": 0.5, "stroke": color, "stroke-width": "0.5%", "data-title": data_item.name, "data-value": data_item.value, class: "graph_piece"});
 		        svg.append(piece_path);
 
+            if(!edge_tooltips) {
+              for(var j=0; j<tooltip_pieces.length; j++) {
+                svg.append(tooltip_pieces[j]);
+              }
+            }
+
 		        key_data.push({'color': color, 'title': data[i]['title']});
         }
 
-        for(var j=0; j<data[0]['values'].length; j++){
-	        	var data_item = data[0]['values'][j],
-	        	coord_x = start_x + outer_radius * (cos(start_angle)),
-		        coord_y = start_y - outer_radius * (sin(start_angle));
-
-	        	var piece_path = makeSVG('circle', {cx: coord_x, cy: coord_y, r: dot_radius, fill: border_color, "data-title": data_item.name, "data-value": tooltip_values[j].join('<br/>'), class: "graph_piece"});
-		        svg.append(piece_path);
-		        start_angle += angle_step;
-
-		        if(show_fit && data.length == 2){
-			        	fit_total += (1 - ( Math.max(data[fit_master]['values'][j]['value'] - data[fit_comparison]['values'][j]['value'], 0) / data_max ) );
-		        }
-	      }
-
-        if(has_key){
+        if(has_key) {
             var key_line_height = height / key_data.length;
             var key_circle_radius = Math.min(5, key_line_height);
-            for(var i=0; i<key_data.length; i++){
+            for(var i=0; i<key_data.length; i++) {
                 var key_data_item = key_data[i];
                 var key_circle = makeSVG('circle', {cx: center_x + 2*key_circle_radius, cy: (i*key_line_height) + key_circle_radius, r: key_circle_radius, fill: key_data_item['color'], class: 'key_circle'});
                 var key_text = makeSVG('text', {x: center_x + 4*key_circle_radius, y: i*key_line_height + 1.5*key_circle_radius, fill: secondary_text_color, class: 'key_text'}, key_data_item.title);
@@ -558,12 +661,12 @@ if(!full_donut){
             }
         }
 
-        if(title){
+        if(title) {
             var graph_title = makeSVG('text', {x: width/2, y: 5, fill: secondary_text_color, 'text-anchor': 'middle', class:'key_text'}, title);
             svg.append(graph_title);
         }
 
-        if(show_fit){
+        if(show_fit) {
 	        	var fit_value = prettyNumber(100 * fit_total/data_points)
 	        	var fit_text = "Fit: " + fit_value + "%";
             var graph_fit = makeSVG('text', {x: width/2, y: height - 2, fill: secondary_text_color, 'text-anchor': 'middle', class:'key_text'}, fit_text);
@@ -573,26 +676,27 @@ if(!full_donut){
 
         var tip = $('<div class="chart_tip"><span class="title"></span><span class="value"></span></div>').appendTo('body');
 
-        element.on('mouseover', 'circle.graph_piece', function(e){
+        element.on('mouseover', 'path.graph_piece, circle.graph_piece', function(e) {
             tip.find('span.title').html($(this).data('title'));
-            if($(this).data('value') && !isNaN($(this).data('value'))){
+            if($(this).data('value') && !isNaN($(this).data('value'))) {
             		tip.find('span.value').text(prettyNumber($(this).data('value')));
-            } else {
+            }
+            else {
 	            	tip.find('span.value').html($(this).data('value'));
             }
             tip.show();
         });
 
-        element.on('mouseleave', 'circle.graph_piece', function(e){
+        element.on('mouseleave', 'path.graph_piece, circle.graph_piece', function(e) {
            tip.hide();
         });
 
-        element.on('mousemove', 'path.graph_piece, circle.graph_piece', function(e){
+        element.on('mousemove', 'path.graph_piece, circle.graph_piece', function(e) {
             tip.css({'left': e.pageX - tip.outerWidth()/2 + 'px', 'top': e.pageY - tip.outerHeight(true) + 'px'});
         });
 
         element.addClass('chart').addClass('skew_chart');
-        if(has_key){
+        if(has_key) {
             element.addClass('has_key');
         }
 
