@@ -14,32 +14,32 @@
     </div>
   </div>
   <div class="row large_margin_top">
-    <div class="col-sm-4 editable_skills_list">
-      <h3 class="text-center">Skills</h3>
+    <div class="col-sm-4 editable_language_ratings_list">
+      <h3 class="text-center">Languages</h3>
       <div id="test_diagram" class="skew_graph"></div>
 
-      <% @user.skills.by_rating.each do |skill| %>
-				<div class="well skill_listing">
+      <% @language_ratings.by_rating.each do |language_rating| %>
+				<div class="well language_rating_listing">
 					<h3 class="no_margin_top">
-						<a href="#"><%= skill.language.name %></a>
+						<a href="#"><%= language_rating.subject.name %></a>
 					</h3>
-					<div class="editable_region" data-list_parent=".editable_skills_list">
-  					<%= form_for skill, :html => {:class => 'ajax_form'} do |f| %>
+					<div class="editable_region" data-list_parent=".editable_language_ratings_list">
+  					<%= form_for language_rating, :html => {:class => 'ajax_form'} do |f| %>
 
     				  <div class="static_display" style="min-height: 44px;">
       					<div class="progress">
-      					  <div class="progress-bar<% if skill.rating >=8 %> progress-bar-success<% elsif skill.rating >=4 %> progress-bar-warning<% else %> progress-bar-danger<% end %>" role="progressbar" aria-valuenow="<%= skill.rating %>" aria-valuemin="0" aria-valuemax="10" style="width: <%= skill.rating %>0%;">
-      					    <%= skill.rating %>/10
+      					  <div class="progress-bar<% if language_rating.rating >=8 %> progress-bar-success<% elsif language_rating.rating >=4 %> progress-bar-warning<% else %> progress-bar-danger<% end %>" role="progressbar" aria-valuenow="<%= language_rating.rating %>" aria-valuemin="<%= language_rating.rating_min %>" aria-valuemax="<%= language_rating.rating_max %>" style="width: <%= language_rating.rating %>0%;">
+      					    <%= language_rating.rating %>/<%= language_rating.rating_max %>
       					  </div>
       					</div>
     				  </div>
     				  <div class="edit_display">
       					<div class="row slider_container">
       						<div class="col-xs-9">
-      							<input type="range" name="rating" min="0" max="10" step="1" value="<%= skill.rating %>" data-skill_name="<%= skill.language.name %>">
+      							<input type="range" name="rating" min="0" max="10" step="1" value="<%= language_rating.rating %>" data-language_name="<%= language_rating.subject.name %>">
       						</div>
       						<div class="col-xs-3">
-      							<span class="slider_value_wrapper alt_font"><span class="slider_value"><%= skill.rating %></span>/10</span>
+      							<span class="slider_value_wrapper alt_font"><span class="slider_value"><%= language_rating.rating %></span>/<%= language_rating.rating_max %></span>
       						</div>
       					</div>
     				  </div>
@@ -52,7 +52,7 @@
     <div class="col-sm-4">
       <h3 class="text-center">Code Samples</h3>
       <% @user.code_samples.by_date_completed.each do |code_sample| %>
-        <div class="well skill_listing">
+        <div class="well code_sample">
 					<h3 class="no_margin_top">
 						<a href="<%= code_sample.url %>" target="_blank"><%= code_sample.title %></a>
 					</h3>
@@ -60,8 +60,8 @@
   					<%= code_sample.description %>
 					</p>
 					<p>Using: <em>
-  				  <% code_sample.skills.each do |code_sample_skill| %>
-  				    <%= code_sample_skill.language.name %>,
+  				  <% code_sample.ratings.each do |code_sample_rating| %>
+  				    <%= code_sample_rating.subject.name %>,
   				  <% end %>
   				</em></p>
         </div>
@@ -77,23 +77,23 @@
 <script type="text/javascript">
 
 jQuery(function($){
-	var skills_array = [];
-	<% @user.skills.by_language.each do |skill| %>
-		skills_array.push({name: '<%= skill.language.name %>', value: <%= skill.rating %>, category: 'Category 1'})
+	var language_ratings_array = [];
+	<% @language_ratings.by_subject.each do |language_rating| %>
+		language_ratings_array.push({name: '<%= language_rating.subject.name %>', value: <%= language_rating.rating %>, category: 'Category 1'})
 	<% end %>
 
-  skills_array[2]['category'] = 'Category 2'
-  skills_array[3]['category'] = 'Category 2'
+  language_ratings_array[2]['category'] = 'Category 2'
+  language_ratings_array[3]['category'] = 'Category 2'
 
-  skills_array[4]['category'] = 'Category 3'
-  skills_array[5]['category'] = 'Category 3'
+  language_ratings_array[4]['category'] = 'Category 3'
+  language_ratings_array[5]['category'] = 'Category 3'
 
-  skills_array[6]['category'] = 'Category 4'
+  language_ratings_array[6]['category'] = 'Category 4'
 
-	var updateSkew = function(new_skills_array){
-  	var skills_data = [{title: 'Skill Rating', values: new_skills_array}];
+	var updateSkew = function(new_language_ratings_array){
+  	var language_ratings_data = [{title: 'Language Rating', values: new_language_ratings_array}];
 
-    var skills_options = {
+    var language_ratings_options = {
       colors: [
         '#4CAF50'
       ],
@@ -103,10 +103,10 @@ jQuery(function($){
       categories_colors: ['#81D4FA', '#EF9A9A', '#C5E1A5', '#FFE082', '#B39DDB', '#FFAB91']
     };
 
-    $('#test_diagram').html('').drawSkew(skills_data, skills_options);
+    $('#test_diagram').html('').drawSkew(language_ratings_data, language_ratings_options);
 	};
 
-	updateSkew(skills_array);
+	updateSkew(language_ratings_array);
 
 	var returnMatchingIndex = function(check_array, attr_name, attr_value){
   	for(i=0; i<check_array.length; i++){
@@ -117,14 +117,14 @@ jQuery(function($){
   	return false;
 	};
 
-  $('body').on('change, input', '.skill_listing input[type="range"]', function(){
-    var skill_name = $(this).data('skill_name');
+  $('body').on('change, input', '.language_rating_listing input[type="range"]', function(){
+    var language_name = $(this).data('language_name');
     var updated_value = $(this).val();
-    var updated_skill_index = returnMatchingIndex(skills_array, 'name', skill_name);
+    var updated_language_rating_index = returnMatchingIndex(language_ratings_array, 'name', language_name);
 
-    if(updated_skill_index !== false){
-      skills_array[updated_skill_index]['value'] = updated_value;
-      updateSkew(skills_array);
+    if(updated_language_rating_index !== false){
+      language_ratings_array[updated_language_rating_index]['value'] = updated_value;
+      updateSkew(language_ratings_array);
     }
 
   });

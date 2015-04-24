@@ -1,6 +1,6 @@
 class User < ActiveRecord::Base
   belongs_to :state
-  has_many :skills, as: :parent
+  has_many :ratings, as: :parent
   has_many :jobs
   has_many :code_samples
   # Include default devise modules. Others available are:
