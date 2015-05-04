@@ -147,3 +147,18 @@ code_sample_2_ratings = Rating.create([{parent: code_sample_2, subject: language
 																	     {parent: code_sample_2, subject: languages[1], rating: 9},
                                        {parent: code_sample_2, subject: languages[5], rating: 8},
                                        {parent: code_sample_2, subject: languages[6], rating: 7}])
+
+
+work_environment_1 = WorkEnvironment.create(title: "Company Size", description: "What is your ideal size of company?")
+work_environment_1_rating = Rating.create(parent: user, subject: work_environment_1, rating: 5)
+work_environment_1_rating_descriptions = RatingDescription.create([{rating:0, description: "0-5 people", rateable: work_environment_1},
+                                                                   {rating:1, description: "5-10 people", rateable: work_environment_1},
+                                                                   {rating:2, description: "10-20 people", rateable: work_environment_1},
+                                                                   {rating:3, description: "20-30 people", rateable: work_environment_1},
+                                                                   {rating:4, description: "30-50 people", rateable: work_environment_1},
+                                                                   {rating:5, description: "50-75 people", rateable: work_environment_1},
+                                                                   {rating:6, description: "75-100 people", rateable: work_environment_1},
+                                                                   {rating:7, description: "100-150 people", rateable: work_environment_1},
+                                                                   {rating:8, description: "150-300 people", rateable: work_environment_1},
+                                                                   {rating:9, description: "300-500 people", rateable: work_environment_1},
+                                                                   {rating:10, description: "500+ people", rateable: work_environment_1},])

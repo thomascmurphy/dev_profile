@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150417222639) do
+ActiveRecord::Schema.define(version: 20150425003517) do
 
   create_table "code_samples", force: :cascade do |t|
     t.string   "title"
@@ -68,6 +68,17 @@ ActiveRecord::Schema.define(version: 20150417222639) do
     t.datetime "created_at",           null: false
     t.datetime "updated_at",           null: false
   end
+
+  create_table "rating_descriptions", force: :cascade do |t|
+    t.integer  "rating"
+    t.text     "description"
+    t.integer  "rateable_id"
+    t.string   "rateable_type"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  add_index "rating_descriptions", ["rateable_type", "rateable_id"], name: "index_rating_descriptions_on_rateable_type_and_rateable_id"
 
   create_table "ratings", force: :cascade do |t|
     t.integer  "parent_id"
@@ -128,5 +139,12 @@ ActiveRecord::Schema.define(version: 20150417222639) do
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   add_index "users", ["state_id"], name: "index_users_on_state_id"
   add_index "users", ["username"], name: "index_users_on_username", unique: true
+
+  create_table "work_environments", force: :cascade do |t|
+    t.string   "title"
+    t.text     "description"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
 
 end

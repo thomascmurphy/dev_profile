@@ -16,36 +16,89 @@
   <div class="row large_margin_top">
     <div class="col-sm-4 editable_language_ratings_list">
       <h3 class="text-center">Languages</h3>
-      <div id="test_diagram" class="skew_graph"></div>
+      <div id="languages_diagram" class="skew_graph"></div>
+
+      <% if @edit_privileges && @language_choices.length %>
+        <div class="well language_rating_listing">
+          <div class="editable_region" data-list_parent=".editable_language_ratings_list">
+            <%= form_for([current_user, current_user.ratings.build], :html => {:class => 'ajax_form'}) do |f| %>
+              <div class="static_display" style="min-height: 44px;">
+                ...
+              </div>
+              <div class="edit_display">
+                <div class="row">
+                  <div class="col-xs-12">
+                    <select name="subject_id">
+                      <option value="">Language<%= @language_choices.length %></option>
+                      <% @language_choices.each do |language| %>
+                        <option value="<%= language.id %>"><%= language.name %></option>
+                      <% end %>
+                    </select>
+                  </div>
+                </div>
+                <div class="row slider_container">
+      						<div class="col-xs-9">
+      							<input type="range" name="rating" min="0" max="10" step="1" value="0" data-language_name="">
+      						</div>
+      						<div class="col-xs-3">
+      							<span class="slider_value_wrapper alt_font"><span class="slider_value">0</span>/10</span>
+      						</div>
+      					</div>
+              </div>
+
+
+              <a href="javascript:void(0);" class="edit_toggle">New</a>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
 
       <% @language_ratings.by_rating.each do |language_rating| %>
-				<div class="well language_rating_listing">
+				<div class="well language_rating_listing editable_container">
 					<h3 class="no_margin_top">
 						<a href="#"><%= language_rating.subject.name %></a>
 					</h3>
-					<div class="editable_region" data-list_parent=".editable_language_ratings_list">
-  					<%= form_for language_rating, :html => {:class => 'ajax_form'} do |f| %>
 
-    				  <div class="static_display" style="min-height: 44px;">
-      					<div class="progress">
-      					  <div class="progress-bar<% if language_rating.rating >=8 %> progress-bar-success<% elsif language_rating.rating >=4 %> progress-bar-warning<% else %> progress-bar-danger<% end %>" role="progressbar" aria-valuenow="<%= language_rating.rating %>" aria-valuemin="<%= language_rating.rating_min %>" aria-valuemax="<%= language_rating.rating_max %>" style="width: <%= language_rating.rating %>0%;">
-      					    <%= language_rating.rating %>/<%= language_rating.rating_max %>
-      					  </div>
-      					</div>
-    				  </div>
-    				  <div class="edit_display">
-      					<div class="row slider_container">
-      						<div class="col-xs-9">
-      							<input type="range" name="rating" min="0" max="10" step="1" value="<%= language_rating.rating %>" data-language_name="<%= language_rating.subject.name %>">
-      						</div>
-      						<div class="col-xs-3">
-      							<span class="slider_value_wrapper alt_font"><span class="slider_value"><%= language_rating.rating %></span>/<%= language_rating.rating_max %></span>
-      						</div>
-      					</div>
-    				  </div>
-    				  <a href="javascript:void(0);" class="edit_toggle">Edit</a>
-  					<% end %>
-					</div>
+					<% if @edit_privileges %>
+  					<div class="editable_region" data-list_parent=".editable_language_ratings_list">
+    					<%= form_for language_rating, :html => {:class => 'ajax_form'} do |f| %>
+
+      				  <div class="static_display" style="min-height: 44px;">
+        					<div class="progress">
+        					  <div class="progress-bar<% if language_rating.rating >=8 %> progress-bar-success<% elsif language_rating.rating >=4 %> progress-bar-warning<% else %> progress-bar-danger<% end %>" role="progressbar" aria-valuenow="<%= language_rating.rating %>" aria-valuemin="<%= language_rating.rating_min %>" aria-valuemax="<%= language_rating.rating_max %>" style="width: <%= language_rating.rating %>0%;">
+        					    <%= language_rating.rating %>/<%= language_rating.rating_max %>
+        					  </div>
+        					</div>
+      				  </div>
+      				  <div class="edit_display">
+        					<div class="row slider_container">
+        						<div class="col-xs-9">
+        							<input type="range" name="rating" min="0" max="10" step="1" value="<%= language_rating.rating %>" data-language_name="<%= language_rating.subject.name %>">
+        						</div>
+        						<div class="col-xs-3">
+        							<span class="slider_value_wrapper alt_font"><span class="slider_value"><%= language_rating.rating %></span>/<%= language_rating.rating_max %></span>
+        						</div>
+        					</div>
+      				  </div>
+      				  <div class="row">
+        				  <div class="col-xs-6">
+        				    <a href="javascript:void(0);" class="edit_toggle">Edit</a>
+        				  </div>
+        				  <div class="col-xs-6 text-right">
+          				  <%= link_to 'Delete', [language_rating.parent, language_rating],
+                                method: :delete,
+                                class: 'delete_link orange' %>
+        				  </div>
+      				  </div>
+    					<% end %>
+  					</div>
+					<% else %>
+					  <div class="progress">
+  					  <div class="progress-bar<% if language_rating.rating >=8 %> progress-bar-success<% elsif language_rating.rating >=4 %> progress-bar-warning<% else %> progress-bar-danger<% end %>" role="progressbar" aria-valuenow="<%= language_rating.rating %>" aria-valuemin="<%= language_rating.rating_min %>" aria-valuemax="<%= language_rating.rating_max %>" style="width: <%= language_rating.rating %>0%;">
+  					    <%= language_rating.rating %>/<%= language_rating.rating_max %>
+  					  </div>
+  					</div>
+					<% end %>
 				</div>
 			<% end %>
     </div>
@@ -67,8 +120,43 @@
         </div>
       <% end %>
     </div>
-    <div class="col-sm-4">
+    <div class="col-sm-4 editable_work_environment_ratings_list">
       <h3 class="text-center">Preferences</h3>
+      <div id="work_environment_diagram" class="skew_graph"></div>
+      <% @work_environment_ratings.each do |work_environment_rating| %>
+        <div class="well language_rating_listing">
+					<h3 class="no_margin_top">
+						<a href="#"><%= work_environment_rating.subject.title %></a>
+					</h3>
+					<% if @edit_privileges %>
+  					<div class="editable_region" data-list_parent=".editable_work_environment_ratings_list">
+    					<%= form_for work_environment_rating, :html => {:class => 'ajax_form'} do |f| %>
+
+      				  <div class="static_display" style="min-height: 44px;">
+        					<span class="update_value"><%= work_environment_rating.subject.get_rating_description(work_environment_rating.rating) %></span>
+      				  </div>
+      				  <div class="edit_display">
+        					<div class="row slider_container">
+        						<div class="col-xs-9">
+        							<input type="range" name="rating" min="0" max="10" step="1" value="<%= work_environment_rating.rating %>"  data-value_conversions_piped="<%= work_environment_rating.subject.get_piped_rating_descriptions() %>">
+        						</div>
+        						<div class="col-xs-3">
+        							<span class="slider_value_wrapper alt_font long">
+        							  <span class="slider_value">
+                          <%= work_environment_rating.subject.get_rating_description(work_environment_rating.rating) %>
+        							  </span>
+                      </span>
+        						</div>
+        					</div>
+      				  </div>
+      				  <a href="javascript:void(0);" class="edit_toggle">Edit</a>
+    					<% end %>
+  					</div>
+					<% else %>
+					  <div><%= work_environment_rating.subject.get_rating_description(work_environment_rating.rating) %></div>
+					<% end %>
+				</div>
+      <% end %>
     </div>
   </div>
 </div>
@@ -82,13 +170,23 @@ jQuery(function($){
 		language_ratings_array.push({name: '<%= language_rating.subject.name %>', value: <%= language_rating.rating %>, category: 'Category 1'})
 	<% end %>
 
-  language_ratings_array[2]['category'] = 'Category 2'
-  language_ratings_array[3]['category'] = 'Category 2'
+  if(language_ratings_array[2]){
+    language_ratings_array[2]['category'] = 'Category 2';
+  }
+  if(language_ratings_array[3]){
+    language_ratings_array[3]['category'] = 'Category 2';
+  }
 
-  language_ratings_array[4]['category'] = 'Category 3'
-  language_ratings_array[5]['category'] = 'Category 3'
+  if(language_ratings_array[4]){
+    language_ratings_array[4]['category'] = 'Category 3';
+  }
+  if(language_ratings_array[5]){
+    language_ratings_array[5]['category'] = 'Category 3';
+  }
 
-  language_ratings_array[6]['category'] = 'Category 4'
+  if(language_ratings_array[6]){
+    language_ratings_array[6]['category'] = 'Category 4';
+  }
 
 	var updateSkew = function(new_language_ratings_array){
   	var language_ratings_data = [{title: 'Language Rating', values: new_language_ratings_array}];
@@ -103,7 +201,7 @@ jQuery(function($){
       categories_colors: ['#81D4FA', '#EF9A9A', '#C5E1A5', '#FFE082', '#B39DDB', '#FFAB91']
     };
 
-    $('#test_diagram').html('').drawSkew(language_ratings_data, language_ratings_options);
+    $('#languages_diagram').html('').drawSkew(language_ratings_data, language_ratings_options);
 	};
 
 	updateSkew(language_ratings_array);

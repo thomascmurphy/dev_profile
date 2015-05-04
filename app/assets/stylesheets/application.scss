@@ -229,7 +229,7 @@ h1, h2, h3, h4, h5, h6{
     line-height: 1.375em;
 }
 
-a{
+a, a:active{
     text-decoration: none;
     color: $green;
 }
@@ -333,6 +333,12 @@ input[type=range]:focus::-ms-fill-upper {
 	line-height: 44px;
 	font-size: 18px;
 	font-weight: bold;
+}
+
+.slider_value_wrapper.long{
+  line-height: normal;
+  font-size: 16px;
+  font-weight: normal;
 }
 
 
@@ -652,6 +658,10 @@ form.image_form{
     display: none;
   }
 
+  .delete_link{
+    display: none;
+  }
+
   .progress{
     margin-top: 12px;
     margin-bottom: 12px;
@@ -667,5 +677,9 @@ form.image_form{
   .edit_display{
     display: block;
     overflow: hidden;
+  }
+
+  .delete_link{
+    display: inline;
   }
 }
