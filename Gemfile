@@ -36,8 +36,12 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'redcarpet', '~> 3.1.2'
 gem 'devise'
 gem 'bootstrap-sass'
-
+  
 group :development, :test do
+  gem 'pry'
+  gem 'pry-remote'
+  gem 'pry-nav'
+  gem 'pry-rails'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
 
