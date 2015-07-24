@@ -16,7 +16,7 @@
 //= require turbolinks
 //= require_tree .
 
-//= require chart-simple
+//= require chartery
 
 jQuery(function($){
 
