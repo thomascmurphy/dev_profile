@@ -9,7 +9,7 @@
       <h1 class="green alt_font no_margin_top"><%= @user.first_name %> <%= @user.last_name %></h1>
       <h2><%= @user.title %></h2>
       <div id="profile_job_timeline">
-        job timeline <%= @user_signed_in %>
+
       </div>
     </div>
   </div>
@@ -205,6 +205,28 @@ jQuery(function($){
 	};
 
 	updateSkew(language_ratings_array);
+
+  var updateJobTimeline = function(new_job_array){
+    var job_timeline_options = {
+      colors: [
+        '#4CAF50',
+        '#FBC02D'
+      ],
+      has_key: false,
+      hover: true,
+      title: 'Job Timeline'
+    };
+
+    $('#profile_job_timeline').html('').drawLine(new_job_array, job_timeline_options);
+	};
+
+  var job_array = [[{name: 'Job 1', value: 2, tooltip_value: ['CSS', 'HTML']},
+                    {name: 'Job 2', value: 3, tooltip_value: ['Python']},
+                    {name: 'Job 3', value: 5, tooltip_value: ['Ruby', 'SQL']},
+                    {name: 'Job 4', value: 7, tooltip_value: ['PostGreSQL', 'JQuery']},
+                    {name: 'Job 5', value: 10, tooltip_value: ['Mongo', 'HTML', 'Rails']}]];
+
+  updateJobTimeline(job_array);
 
 	var returnMatchingIndex = function(check_array, attr_name, attr_value){
   	for(i=0; i<check_array.length; i++){
